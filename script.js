@@ -1,51 +1,52 @@
-(async function checkForUpdates() {
-    const currentVersion = "1.0";
-    const versionUrl = "https://raw.githubusercontent.com/ivysone/Will-you-be-my-Valentine-/main/version.json"; 
+let noClickCount = 0;
 
-    try {
-        const response = await fetch(versionUrl);
-        if (!response.ok) {
-            console.warn("Could not fetch version information.");
-            return;
-        }
-        const data = await response.json();
-        const latestVersion = data.version;
-        const updateMessage = data.updateMessage;
-
-        if (currentVersion !== latestVersion) {
-            alert(updateMessage);
-        } else {
-            console.log("You are using the latest version.");
-        }
-    } catch (error) {
-        console.error("Error checking for updates:", error);
-    }
-})();
-
-const messages = [
-    "จะไม่ให้จริงหรอ",
-    "ขอหน่อยมั้ยย",
-    "ไม่สงสารเด็กตาดำๆหน่อยหรอ",
-    "ขอได้มุย",
-    "งื้้ออออออ",
-    "นะครับๆ",
-    "พี่สารี่่",
-    "นะๆๆๆๆๆ",
-    "ไม่สงสารกันเลย",
-    "ไม่เอาก็ได้เชอะ"
-];
-
-let messageIndex = 0;
-
-function handleNoClick() {
-    const noButton = document.querySelector('.no-button');
-    const yesButton = document.querySelector('.yes-button');
-    noButton.textContent = messages[messageIndex];
-    messageIndex = (messageIndex + 1) % messages.length;
-    const currentSize = parseFloat(window.getComputedStyle(yesButton).fontSize);
-    yesButton.style.fontSize = `${currentSize * 1.5}px`;
+function changeImage(newSrc) {
+  document.getElementById("mainImage").src = newSrc;
 }
 
-function handleYesClick() {
-    window.location.href = "yes_page.html";
+function resetImage() {
+  document.getElementById("mainImage").src = "doyou.png";
+}
+// จำนวนปุ่มไม่ลิมิตที่เท่าไหร่ใส่ตรงนี้
+function handleNoClick() {
+  noClickCount++;
+  if (noClickCount < 10) {
+    shrinkNoButton();
+    moveNoButton();
+  } else {
+    showPage("noPage");
+  }
+}
+
+function shrinkNoButton() {
+  const noButton = document.getElementById("noButton");
+  const currentPadding = parseFloat(getComputedStyle(noButton).padding);
+  const currentFontSize = parseFloat(getComputedStyle(noButton).fontSize);
+
+  noButton.style.padding = `${currentPadding * 0.9}px`;
+  noButton.style.fontSize = `${currentFontSize * 0.9}px`;
+}
+
+function moveNoButton() {
+  const noButton = document.getElementById("noButton");
+  const container = noButton.parentElement;
+  const containerRect = container.getBoundingClientRect();
+  const buttonRect = noButton.getBoundingClientRect();
+
+  const maxLeft = containerRect.width - buttonRect.width;
+  const maxTop = containerRect.height - buttonRect.height;
+
+  const randomLeft = Math.random() * maxLeft;
+  const randomTop = Math.random() * maxTop;
+
+  noButton.style.position = "absolute";
+  noButton.style.left = `${randomLeft}px`;
+  noButton.style.top = `${randomTop}px`;
+}
+
+function showPage(pageId) {
+  document.getElementById("mainPage").classList.add("hidden");
+  document.getElementById("lovePage").classList.add("hidden");
+  document.getElementById("noPage").classList.add("hidden");
+  document.getElementById(pageId).classList.remove("hidden");
 }
